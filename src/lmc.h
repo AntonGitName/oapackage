@@ -198,7 +198,7 @@ public:
     inline void setRef(const std::string s)
     {
         ref=s;
-        printf("LMC_static_struct_t: set ref %s\n", ref.c_str() );
+        myprintf("LMC_static_struct_t: set ref %s\n", ref.c_str() );
     }
     int id;
 #endif
@@ -209,7 +209,7 @@ public:
 
     void show(int verbose=1) const
     {
-        printf("LMC_static_struct_t: ad %ld, LMC_non_root_init %d\n", long(this->ad), LMC_non_root_init );
+        myprintf("LMC_static_struct_t: ad %ld, LMC_non_root_init %d\n", long(this->ad), LMC_non_root_init );
     }
 
     void init ( const arraydata_t *adp );
@@ -311,9 +311,9 @@ public:
     }
     void show() const
     {
-        printf("arraysymmetry: rowperm ");
+        myprintf("arraysymmetry: rowperm ");
         print_perm<rowindex_t>(*rowperm, 24);
-        printf("             : colperm ");
+        myprintf("             : colperm ");
         print_perm(colperm);
     }
 };
@@ -432,7 +432,7 @@ struct LMCreduction_t {
             long ns=0, ncp=0, ncc=0;
             for(size_t i=0; i<symmetries.size(); i++) {
                 if (verbose>=2) {
-                    printf("  symm_t: k %ld: symms %ld\n", (long)i, (long)symmetries[i].size() );
+                    myprintf("  symm_t: k %ld: symms %ld\n", (long)i, (long)symmetries[i].size() );
                 }
                 ns+=symmetries[i].size();
             }
@@ -441,7 +441,7 @@ struct LMCreduction_t {
             for(size_t i=0; i<colcombs.size(); i++)
                 ncc+=colcombs[i].size();
 
-            printf("symm_t: store %d, symms %ld, colperms %ld, colcombs %ld, ncols %d\n", store, ns, ncp, ncc, ncols);
+            myprintf("symm_t: store %d, symms %ld, colperms %ld, colcombs %ld, ncols %d\n", store, ns, ncp, ncc, ncols);
         }
         bool valid() const
         {
@@ -456,7 +456,7 @@ struct LMCreduction_t {
 
                 std::vector< colpermtype >::iterator last = std::unique(xx.colperms[i].begin(), xx.colperms[i].end());
                 if (dverbose>=2) {
-                    printf("makeColpermsUnique: i %ld vals %ld, unique %d\n", (long)i, (long) xx.colperms[i].size(), (int)( last - xx.colperms[i].begin()) );
+                    myprintf("makeColpermsUnique: i %ld vals %ld, unique %d\n", (long)i, (long) xx.colperms[i].size(), (int)( last - xx.colperms[i].begin()) );
                 }
                 xx.colperms[i].erase(last,  xx.colperms[i].end());
 
@@ -488,7 +488,7 @@ struct LMCreduction_t {
         void showColperms(int verbose=1) const
         {
             for(size_t i=0; i<=(size_t)ncols; i++) {
-                printf("LMCreduction: column permutations with %d cols: %ld/%ld\n", (int)i, (long)colperms[i].size(), ncombs<long>(ncols, i) );
+                myprintf("LMCreduction: column permutations with %d cols: %ld/%ld\n", (int)i, (long)colperms[i].size(), ncombs<long>(ncols, i) );
                 if (verbose>=2) {
                     for( colpermset::const_iterator it = colperms[i].begin(); it != colperms[i].end(); it++) {
                         print_perm( *it );
@@ -500,7 +500,7 @@ struct LMCreduction_t {
         void showColcombs(int verbose=1) const
         {
             for(size_t i=0; i<=(size_t)ncols; i++) {
-                printf("LMCreduction: column combinations with %d cols: %d/%ld\n", (int)i, (int)colcombs[i].size(), ncombs<long>(ncols, i) );
+                myprintf("LMCreduction: column combinations with %d cols: %d/%ld\n", (int)i, (int)colcombs[i].size(), ncombs<long>(ncols, i) );
                 if (verbose>=2) {
                     for( colpermset::const_iterator it = colcombs[i].begin(); it != colcombs[i].end(); it++) {
                         print_perm( *it );
@@ -511,7 +511,7 @@ struct LMCreduction_t {
         void showSymmetries(int verbose=1) const
         {
             for(size_t i=0; i<(size_t)symmetries.size() ; i++) {
-                printf("LMCreduction: symmetries with %ld cols: %ld/%ld\n", (long)i, (long)symmetries[i].size(), ncombs<long>(ncols, i) );
+                myprintf("LMCreduction: symmetries with %ld cols: %ld/%ld\n", (long)i, (long)symmetries[i].size(), ncombs<long>(ncols, i) );
                 if (verbose>=2 || (i==60 )) {
                     for( symmetryset::const_iterator it = symmetries[i].begin(); it != symmetries[i].end(); it++) {
                         it->show();
@@ -565,7 +565,7 @@ public:
 #endif
         if (sdp!=0 && cache ) { //&& (reduction.sd->orig == al) ) {
             //do nothing
-            //  printf("using cached symmdata!\n");
+            //  myprintf("using cached symmdata!\n");
         } else {
             // update symmetry data
             this->sd = symmdataPointer(new symmdata(al, 1) );
@@ -586,7 +586,6 @@ public:
     void initStatic()
     {
         if(this->staticdata==0) {
-            // printfd("staticdata==0, allocating new structure\n");
             this->staticdata=getGlobalStatic();
         }
     }
@@ -595,7 +594,6 @@ public:
     LMC_static_struct_t & getStaticReference()
     {
         if(this->staticdata==0) {
-            // printfd("problem! getStaticReference() calls getGlobalStaticOne!\n");
             return getGlobalStaticOne();
         } else {
             //printfd("return internal pointer...\n");
@@ -608,9 +606,9 @@ public:
 
     void show ( int verbose=2 ) const
     {
-        printf ( "LMCreduction_t: mode %d, state %d (REDUCTION_INITIAL %d, REDUCTION_CHANGED %d), init_state %d, lastcol %d\n", this->mode, this->state, REDUCTION_INITIAL, REDUCTION_CHANGED, this->init_state, this->lastcol );
+        myprintf ( "LMCreduction_t: mode %d, state %d (REDUCTION_INITIAL %d, REDUCTION_CHANGED %d), init_state %d, lastcol %d\n", this->mode, this->state, REDUCTION_INITIAL, REDUCTION_CHANGED, this->init_state, this->lastcol );
         if ( verbose>=1 ) {
-            printf ( "LMCreduction_t: nred %ld\n", nred );
+            myprintf ( "LMCreduction_t: nred %ld\n", nred );
             print_array ( "array:\n", this->array, this->transformation->ad->N, this->transformation->ad->ncols );
         }
         if ( verbose>=2 )
@@ -757,7 +755,6 @@ public:
     colpermtypelight getColperm() const
     {
         colpermtypelight cp(this->colperm, this->col+1);
-        //  printf("created colpermtypelight: cp.n %d\n", cp.n);
         return cp;
     }
     /// set column permutation
@@ -926,7 +923,7 @@ void combadd2perm(const larray<numtype> &comb, int newidx, int n, larray<numtype
         target[i]=comb[i];
         wtmp[comb[i]]=-1;
     }
-    if (j<0) printf("combadd2perm: j<0! j %d\n", j);
+    if (j<0) myprintf("combadd2perm: j<0! j %d\n", j);
     target[j]=newidx;
     wtmp[newidx]=-1;
     j++;
